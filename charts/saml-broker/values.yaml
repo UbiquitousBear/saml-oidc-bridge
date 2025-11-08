@@ -1,0 +1,63 @@
+image:
+  repository: ghcr.io/your-org/broker
+  tag: dev
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  hosts:
+    - host: id.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources: {}
+
+env:
+  # OIDC client secret comes from a Secret
+  OIDC_CLIENT_SECRET_SECRET_NAME: oidc-secret
+  OIDC_CLIENT_SECRET_KEY: OIDC_CLIENT_SECRET
+
+config:
+  # Paste example.config.yaml here (without private key if you mount keys via secret)
+  server:
+    listen: ":8080"
+    external_url: "https://id.example.com"
+  crypto:
+    active_key: "k-2025-09"
+    keys: []
+  oidc_upstream:
+    issuer: "https://pocket-id.example"
+    client_id: "your-client-id"
+    redirect_path: "/oidc/callback"
+    scopes: ["email","profile"]
+  sps:
+    - name: "splunk"
+      entity_id: "https://splunk.example"
+      acs_url: "https://splunk.example/saml/acs"
+      audience: "https://splunk.example"
+      nameid_format: "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+      attribute_mapping:
+        mail: "email"
+        realName: "name"
+        role: "role"
+      role_mapping:
+        admins: "admin"
+        power: "power"
+        "*": "user"
+  security:
+    skew_seconds: 120
+    assertion_ttl_seconds: 300
+    require_signed_authn_request: false
+    metadata_valid_until_days: 7
+    metadata_cache_duration_seconds: 86400
+  session:
+    cookie_name: "_saml_broker"
+    cookie_secure: true
+    cookie_domain: "id.example.com"

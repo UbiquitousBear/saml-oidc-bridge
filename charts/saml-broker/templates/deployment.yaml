@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "saml-broker.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "saml-broker.name" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "saml-broker.name" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "saml-broker.name" . }}
+    spec:
+      containers:
+        - name: broker
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: CONFIG_PATH
+              value: /config/config.yaml
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.env.OIDC_CLIENT_SECRET_SECRET_NAME }}
+                  key: {{ .Values.env.OIDC_CLIENT_SECRET_KEY }}
+          ports:
+            - name: http
+              containerPort: 8080
+          volumeMounts:
+            - name: cfg
+              mountPath: /config
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+      volumes:
+        - name: cfg
+          configMap:
+            name: {{ include "saml-broker.fullname" . }}-config

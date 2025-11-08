@@ -1,0 +1,43 @@
+server:
+  listen: :8080
+  external_url: https://saml-v.ttt.net
+crypto:
+  active_key: k-2025-12
+  keys:
+    - id: k-2025-12
+      cert_pem: |
+        ...
+      key_pem: |
+        ...
+      not_after: 2028-01-06T12:27:11.670644Z
+oidc_upstream:
+  issuer: https://id.tt.net
+  client_id: 1ec56384
+  redirect_path: /oidc/callback
+  scopes:
+    - email
+    - profile
+sps:
+  - name: splunk
+    entity_id: https://splunk.example
+    acs_url: https://splunk.example/saml/acs
+    audience: https://splunk.example
+    nameid_format: urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress
+    attribute_mapping:
+      mail: email
+      realName: name
+      role: role
+    role_mapping:
+      '*': user
+      admins: admin
+      power: power
+security:
+  skew_seconds: 120
+  assertion_ttl_seconds: 300
+  require_signed_authn_request: false
+  metadata_valid_until_days: 7
+  metadata_cache_duration_seconds: 86400
+session:
+  cookie_name: _saml_broker
+  cookie_secure: true
+  cookie_domain: saml-v.ttt.net

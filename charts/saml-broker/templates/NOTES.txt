@@ -1,0 +1,4 @@
+1. Get the service URL by running these commands:
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "saml-broker.name" . }}" -o jsonpath="{.items[0].metadata.name}")
+  kubectl port-forward $POD_NAME 8080:8080 &
+  echo "Visit http://127.0.0.1:8080/saml/metadata"

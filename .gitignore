@@ -1,0 +1,41 @@
+# Binaries and build artifacts
+bin/
+build/
+dist/
+out/
+tmp/
+
+# Go compiler outputs
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Dependency/vendor directories
+vendor/
+
+# Coverage and profiling data
+coverage.*
+*.cov
+*.coverprofile
+*.pprof
+*.prof
+profile.out
+
+# Local configs and secrets
+.env
+.env.*
+*.local
+*.secret.yaml
+
+# IDE/editor state
+.idea/
+.vscode/
+*.code-workspace
+
+# OS junk
+.DS_Store
+Thumbs.db
